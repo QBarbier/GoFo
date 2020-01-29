@@ -4,7 +4,8 @@ library("shinydashboard")
 library("shinyjs")
 
 ## Setting input size max
-options(shiny.maxRequestSize=100*1024^2, shiny.fullstacktrace = TRUE)
+options(shiny.maxRequestSize=100*1024^2,
+        shiny.fullstacktrace = TRUE)
 
 shinyServer(function(input, output) {
 
@@ -63,12 +64,12 @@ shinyServer(function(input, output) {
 		h <- hist(obs, plot=FALSE, freq=TRUE,breaks=br)
 		x.obs <- h$mid
 		y.obs <- h$density
-		
+
 		# Merge event for khideux test
 		if(input$merged==TRUE){
-			
+
 		}
-			
+
 		# Normal theorical parts
 		if(input$law =="Normal"){
 			norm <- dnorm(x.obs, mean=mean(obs), sd = sd(obs))
@@ -110,7 +111,7 @@ shinyServer(function(input, output) {
 		},rownames = TRUE)
 
 		# Plot observed in blue bar and red theorical line for theorical law
-		output$plot <- renderPlot({	
+		output$plot <- renderPlot({
 			plot(x.obs, y.obs, ylab="Freq",xlab="Values", type="h", lwd=20, col="blue", ylim=c(0,1.5*max(y.obs,y.the)), cex.lab=1.2, cex.axis=1.2)
 			grid()
 			legend(min(x.obs), 1.5*max(y.obs,y.the), legend=c("Theorical","Observed"), col=c("red","blue"), lty=2:1, cex=1.2, lwd=c(2,2))
