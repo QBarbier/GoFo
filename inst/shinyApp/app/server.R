@@ -60,22 +60,6 @@ shinyServer(function(input, output) {
 	## main function of the tools, compute theorical distribution, observed distribution and make statistical test
 	observeEvent(input$run, {
 		obs <- as.vector(listValues$table[,input$cols])
-		br <- seq(round(min(obs))-0.5,round(max(obs))+0.5,1)
-		h <- hist(obs, plot=FALSE, freq=TRUE,breaks=br)
-		x.obs <- h$mid
-		y.obs <- h$density
-
-		# Merge event for khideux test
-		if(input$merged==TRUE){
-
-		}
-
-		# Normal theorical parts
-		if(input$law =="Normal"){
-			norm <- dnorm(x.obs, mean=mean(obs), sd = sd(obs))
-			x.the <- x.obs
-			y.the <- norm
-		}
 
 		# Poisson theorical parts
 		if(input$law =="Poisson"){
@@ -87,11 +71,6 @@ shinyServer(function(input, output) {
 			y.the <- norm
 		}
 
-		# Equiprobality distribution theorical
-		if(input$law == "Equiprobability"){
-			x.the <- x.obs
-			y.the <- rep(1/length(x.the),length(x.the))
-		}
 
 		# Compute statistical test with theorical distribution and observed values and plot it
 		output$pvalueTable <-renderTable({

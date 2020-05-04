@@ -1,6 +1,6 @@
 Package: GoFo
 Type: Package
-Title: What the Package Does (Title Case)
+Title: Goodness Of Fitting Online
 Version: 0.1.0
 Author: Who wrote it
 Maintainer: The package maintainer <yourself@somewhere.net>
@@ -12,4 +12,5 @@ LazyData: true
 Depends:
   shiny,
   shinyjs,
-  shinydashboard
+  shinydashboard,
+  vcd

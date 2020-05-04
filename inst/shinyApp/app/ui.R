@@ -19,7 +19,7 @@ shinyUI(fluidPage(
 			selectInput("law","Law's adequation",
 				c("Normal"="Normal",
 				  "Poisson"="Poisson",
-				  "Equiprobability"="Equiprobability",
+				  "Uniforme"="Uniforme",
 				  "Binomial"="Binomial"
 				)
 			),
