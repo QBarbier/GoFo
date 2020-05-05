@@ -1,4 +1,4 @@
-### Goodness Of Fitting Online (GoFo)
+# Goodness Of Fitting Online (GoFo)
 
 ## Introduction
 
