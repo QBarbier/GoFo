@@ -1,15 +1,9 @@
 #` @export
 GoFo <- function(){
-
-  library("shiny")
-
   appDir <- system.file("shinyApp", "app", package = "GoFo")
-  if (appDir == "")
-  {
-    stop("Could not find app directory. Try re-installing `GoFo`.",
-         call. = FALSE)
+  if (appDir == "") {
+    stop("Could not find app directory. Try re-installing `GoFo`.",call. = FALSE)
   }
-
   shiny::runApp(appDir, display.mode = "normal", launch.browser = T)
 }
 
@@ -32,6 +26,11 @@ theorique.prob <- function(x, law="Poisson"){
     prob <- dnorm(abs(ceilling(mid),mean(x),sd(x)))
   }
   return(prob)
+}
+
+#`@export
+test.adjust <- function(x,test="chi2"){
+
 }
 
 
