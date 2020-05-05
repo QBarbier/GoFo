@@ -15,9 +15,9 @@ theorique.prob <- function(x, law="Poisson",br=NULL){
   h <- hist(x, plot=FALSE, freq = TRUE,breaks=br)
   mid <- h$mid
   dens <- h$density
-  p <- abs(ceilling(mid))
+  p <- abs(ceiling(mid))
   if(law=="Uniforme"){
-    prob <- rep(1/length(mid),length(mid))
+    prob <- rep(1/length(p),length(p))
   }
   if(law="Exponentille"){
     res <- fitdist(x,"exp")
@@ -25,7 +25,7 @@ theorique.prob <- function(x, law="Poisson",br=NULL){
   }
   if(law=="Poisson"){
     res <- fitdist(x,"pois")
-    prob <- dpois(p,lambda=res@estimate)
+    prob <- dpois(p,lambda=res$estimate)
   }
   if(law=="Normale"){
     res <- fitdist(x,"norm")
@@ -39,22 +39,33 @@ theorique.prob <- function(x, law="Poisson",br=NULL){
     res <- fitdistr(x,"gamma")
     prob <- dgamma(p,res$estimate[[1]],res$estimate[[2]])
   }
+  if(law=="NegBinomial"){
+    res <- fitdistr(x,"nbinom")
+    prob <- dnbinom(p,res$estimate[[1]],res$estimate[[2]])
+  }
   return(prob)
 }
 
 #`@export
 test.adjust <- function(x,test="chi2",prob){
+  if(is.null(br)){
+    br <- seq(round(min(x))-0.5,round(max(x))+0.5,1)
+  }
+  h <- hist(x, plot=FALSE, freq = TRUE,breaks=br)
+  mid <- h$mid
+  dens <- h$density
+  p <- abs(ceiling(mid))
 
   if(test=="chi2"){
-
+    pval <- chisq.test(x,p=prob)$p.value
   }
 
   if(test=="ks"){
-
+    pval <- ks.test(x, y=prob)$p.value
   }
 
   if(test=="sw"){
-
+    pval <- shapiro.test(x)$p.value
   }
 
 }

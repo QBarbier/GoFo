@@ -53,24 +53,13 @@ shinyServer(function(input, output) {
 		bino <- rbinom(1000,c(1:5), prob=0.5)
 		pois2 <- rpois(1000, lambda=50)
 		mat <- matrix(c(norm,pois,equi,bino,pois2), nrow=1000, byrow=FALSE)
-		colnames(mat) <- c("Normale(10,2)","Poisson(5)","Equiprobable(1:10)","Binomial(1:5,0.5)","Poisson(50)")
+		colnames(mat) <- c("Normale(10,2)","Poisson(5)","Uniforme(1:10)","Binomial(1:5,0.5)","Poisson(50)")
 		listValues$table <- data.frame(mat, check.names=FALSE)
 	})
 
 	## main function of the tools, compute theorical distribution, observed distribution and make statistical test
 	observeEvent(input$run, {
 		obs <- as.vector(listValues$table[,input$cols])
-
-		# Poisson theorical parts
-		if(input$law =="Poisson"){
-			norm <- dpois(abs(ceiling(x.obs)), lambda=abs(mean(obs)))
-			if(length(which(x.obs<0))>0 || length(which((obs%%1==0)==FALSE))>0){
-				output$warnings <- renderText({"Poisson law have discret values and non-negative"})
-			}
-			x.the <- x.obs
-			y.the <- norm
-		}
-
 
 		# Compute statistical test with theorical distribution and observed values and plot it
 		output$pvalueTable <-renderTable({

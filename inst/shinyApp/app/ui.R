@@ -17,15 +17,17 @@ shinyUI(fluidPage(
 			fileInput("csv_table","Upload (100 Mo)",multiple=FALSE),
 			checkboxInput("header" ,label="Header Used" ,value = TRUE),
 			selectInput("law","Law's adequation",
-				c("Normal"="Normal",
+				c("Normale"="Normale",
 				  "Poisson"="Poisson",
 				  "Uniforme"="Uniforme",
-				  "Binomial"="Binomial"
+				  "NegBinomial"="NegBinomial",
+				  "Gamma"="Gamma",
+				  "LogNormale"="LogNormale"
 				)
 			),
 			uiOutput("lawInfo"),
 			selectInput("test","Statistical's Test",
-				c("Khi-deux"="Khi-deux",
+				c("Khi-deux"="chi2",
 				  "Kolmogorov-Smirnov"="Kolmogorov-Smirnov",
 				  "Shapiro-Wilks"="Shapiro-Wilks"
 				 )
