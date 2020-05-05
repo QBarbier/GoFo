@@ -36,8 +36,3 @@ theorique.prob <- function(x, law="Poisson"){
 
 
 
-
-
-
-
-}
