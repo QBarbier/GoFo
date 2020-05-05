@@ -14,4 +14,4 @@ Depends:
   shinyjs,
   shinydashboard,
   vcd,
-  fitdistrplu
+  fitdistrplus
