@@ -8,8 +8,16 @@ GoFo <- function(){
 }
 
 #`@export
-theorique.prob <- function(x, law="Poisson"){
-  p <- density(x)$x
+theorique.prob <- function(x, law="Poisson",estimate.by="histogram"){
+  if(estimate.by == "histogram"){
+    br <- seq(round(min(x))-0.5,round(max(x))+0.5,1)
+    h <- hist(x, plot=FALSE, freq=TRUE,breaks=br)
+    p <- h$mid
+    y.obs <- h$density
+  } else {
+    p <- density$x
+  }
+
   if(law=="Uniforme"){
     prob <- rep(1/length(p),length(p))
   } else if(law=="Exponentielle"){
@@ -17,7 +25,7 @@ theorique.prob <- function(x, law="Poisson"){
     prob <- dexp(p,res$estimate)
   } else if(law=="Poisson"){
     res <- fitdist(x,"pois")
-    prob <- dpois(ceiling(p),lambda=as.numeric(res$estimate))
+    prob <- dpois(p,lambda=as.numeric(res$estimate))
   } else if(law=="Normale"){
     res <- fitdist(x,"norm")
     prob <- dnorm(p,res$estimate[[1]],res$estimate[[2]])
@@ -38,24 +46,35 @@ theorique.prob <- function(x, law="Poisson"){
 }
 
 #`@export
-test.adjust <- function(x,test="ks",prob){
-  p <- density(x)$y
+test.adjust <- function(x,test="ks",prob,estimate.by="histogram"){
+  if(estimate.by == "histogram"){
+    br <- seq(round(min(x))-0.5,round(max(x))+0.5,1)
+    h <- hist(x, plot=FALSE, freq=TRUE,breaks=br)
+    p <- h$count
+  } else {
+    p <- density$y
+  }
   prob <- prob/sum(prob)
   if(test=="chi2"){
-    pval <- chisq.test(density(x)$x,p=prob)$p.value
+    pval <- chisq.test(x=p,p=prob)$p.value
   }
   if(test=="ks"){
     pval <- ks.test(x, y=prob)$p.value
-  }
-  if(test=="sw"){
-    pval <- shapiro.test(x)$p.value
   }
   return(pval)
 }
 
 #`@export
-plot.ecdf.adjust <- function(x,probs){
-  a <- density(x)$x
+plot.ecdf.adjust <- function(x,probs,estimate.by="histogram"){
+  if(estimate.by == "histogram"){
+    br <- seq(round(min(x))-0.5,round(max(x))+0.5,1)
+    h <- hist(x, plot=FALSE, freq=TRUE,breaks=br)
+    a <- h$mid
+    b <- h$density
+  } else {
+    a <- density$x
+    b <- density$y
+  }
   par(mar=c(2,2,2,2))
   plot(ecdf(x),main="",col="gray")
   colors <- c("red","blue","green","purple","orange")
@@ -66,9 +85,16 @@ plot.ecdf.adjust <- function(x,probs){
 }
 
 #`@export
-plot.hist.adjust <- function(x, probs){
-  a <- density(x)$x
-  b <- density(x)$y
+plot.hist.adjust <- function(x, probs,estimate.by="histogram"){
+  if(estimate.by == "histogram"){
+    br <- seq(round(min(x))-0.5,round(max(x))+0.5,1)
+    h <- hist(x, plot=FALSE, freq=TRUE,breaks=br)
+    a <- h$mid
+    b <- h$density
+  } else {
+    a <- density$x
+    b <- density$y
+  }
   par(mar=c(2,2,2,2))
   plot(a,b,type="h",col="gray",main=NULL,xlab=NULL,ylab=NULL,ylim=c(0,max(b)*1.33))
   colors <- rainbow(length(probs))
@@ -80,10 +106,13 @@ plot.hist.adjust <- function(x, probs){
 
 #`@export
 demo <- function(){
-  x <- rpois(1000,50)
-  laws <- c("Uniforme","Normale","Gamma","Poisson","Exponentielle","NegBinomial")
+  x <- rexp(1000,1)
+  laws <- c("Uniforme","Normale","Gamma","Poisson","Exponentielle")
   probs <- lapply(laws,function(i){theorique.prob(x,law=i)})
   names(probs) <- laws
-  pvals <- lapply(c(1:length(probs)),function(i){test.adjust(x,test="chi2",probs[[i]])})
+  plot.hist.adjust(x,probs)
+  plot.ecdf.adjust(x,probs)
+  pvals <- lapply(c(1:length(probs)),function(i){
+    test.adjust(x,test="ks",probs[[i]])})
   names(pvals) <- laws
 }
