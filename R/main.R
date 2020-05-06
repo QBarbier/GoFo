@@ -42,7 +42,7 @@ test.adjust <- function(x,test="ks",prob){
   p <- density(x)$y
   prob <- prob/sum(prob)
   if(test=="chi2"){
-    pval <- chisq.test(density(x)$y,p=prob)$p.value
+    pval <- chisq.test(density(x)$x,p=prob)$p.value
   }
   if(test=="ks"){
     pval <- ks.test(x, y=prob)$p.value
@@ -81,9 +81,9 @@ plot.hist.adjust <- function(x, probs){
 #`@export
 demo <- function(){
   x <- rpois(1000,50)
-  laws <- c("Uniforme","Normale","Gamma","Poisson","Exponentielle")
+  laws <- c("Uniforme","Normale","Gamma","Poisson","Exponentielle","NegBinomial")
   probs <- lapply(laws,function(i){theorique.prob(x,law=i)})
   names(probs) <- laws
-  pvals <- lapply(probs,function(i){test.adjust(x,test="chi2",prob)})
+  pvals <- lapply(c(1:length(probs)),function(i){test.adjust(x,test="chi2",probs[[i]])})
   names(pvals) <- laws
 }
