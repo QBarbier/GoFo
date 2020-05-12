@@ -17,15 +17,22 @@ theorique.prob <- function(x, law="Poisson",estimate.by="histogram"){
   } else {
     p <- density$x
   }
-
   if(law=="Uniforme"){
     prob <- rep(1/length(p),length(p))
   } else if(law=="Exponentielle"){
-    res <- fitdist(x,"exp")
-    prob <- dexp(p,res$estimate)
+    if(length(which(x<0))>0){
+      prob <- rep(0,length(p))
+    } else {
+      res <- fitdist(x,"exp")
+      prob <- dexp(p,res$estimate)
+    }
   } else if(law=="Poisson"){
-    res <- fitdist(x,"pois")
-    prob <- dpois(p,lambda=as.numeric(res$estimate))
+    if(length(which(x<0))>0){
+      prob <- rep(0,length(p))
+    } else {
+      res <- fitdist(x,"pois")
+      prob <- dpois(p,lambda=as.numeric(res$estimate))
+    }
   } else if(law=="Normale"){
     res <- fitdist(x,"norm")
     prob <- dnorm(p,res$estimate[[1]],res$estimate[[2]])
@@ -33,8 +40,12 @@ theorique.prob <- function(x, law="Poisson",estimate.by="histogram"){
     res <- fitdist(x,"lnorm")
     prob <- dlnorm(p,res$estimate[[1]],res$estimate[[2]])
   } else if(law=="Gamma"){
-    res <- fitdistr(x,"gamma")
-    prob <- dgamma(p,res$estimate[[1]],res$estimate[[2]])
+    if(length(which(x<0))>0){
+      prob <- rep(0,length(p))
+    } else {
+      res <- fitdistr(x,"gamma")
+      prob <- dgamma(p,res$estimate[[1]],res$estimate[[2]])
+    }
   } else if(law=="NegBinomial"){
     res <- fitdistr(x,"nbinom")
     prob <- dnbinom(p,res$estimate[[1]],res$estimate[[2]])
@@ -55,8 +66,13 @@ test.adjust <- function(x,test="ks",prob,estimate.by="histogram"){
     p <- density$y
   }
   prob <- prob/sum(prob)
+  prob[is.na(prob)] <- 0
   if(test=="chi2"){
-    pval <- chisq.test(x=p,p=prob)$p.value
+    if(sum(prob)!=1){
+      pval = 0
+    } else {
+      pval <- chisq.test(x=p,p=prob)$p.value
+    }
   }
   if(test=="ks"){
     pval <- ks.test(x, y=prob)$p.value
@@ -106,13 +122,13 @@ plot.hist.adjust <- function(x, probs,estimate.by="histogram"){
 
 #`@export
 demo <- function(){
-  x <- rexp(1000,1)
+  x <- rnorm(1000,100,10)
   laws <- c("Uniforme","Normale","Gamma","Poisson","Exponentielle")
-  probs <- lapply(laws,function(i){theorique.prob(x,law=i)})
+  probs <- lapply(laws,function(i){print(i);theorique.prob(x,law=i)})
   names(probs) <- laws
   plot.hist.adjust(x,probs)
   plot.ecdf.adjust(x,probs)
-  pvals <- lapply(c(1:length(probs)),function(i){
-    test.adjust(x,test="ks",probs[[i]])})
+  pvals <- lapply(c(1:length(probs)),function(i){print(i);
+    test.adjust(x,test="chi2",probs[[i]])})
   names(pvals) <- laws
 }
