@@ -27,7 +27,7 @@ theorique.prob <- function(x, law="Poisson",estimate.by="histogram"){
       prob <- dexp(p,res$estimate)
     }
   } else if(law=="Poisson"){
-    if(length(which(x<0))>0){
+    if(length(which(x<0))>0 | length(which(c(x%%2)!=0))>0) {
       prob <- rep(0,length(p))
     } else {
       res <- fitdist(x,"pois")
@@ -122,6 +122,7 @@ plot.hist.adjust <- function(x, probs,estimate.by="histogram"){
 
 #`@export
 demo <- function(){
+  library(fitdistrplus)
   x <- rnorm(1000,100,10)
   laws <- c("Uniforme","Normale","Gamma","Poisson","Exponentielle")
   probs <- lapply(laws,function(i){print(i);theorique.prob(x,law=i)})
